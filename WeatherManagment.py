@@ -1,23 +1,7 @@
 import requests
 import json
-from abc import ABC, abstractmethod
 
-
-class WeatherManageTemplate(ABC):
-
-    @abstractmethod
-    def GetDataFromJson() -> dict:
-        ...
-    @abstractmethod
-    def CheckApi() -> None:
-        ...
-
-    @abstractmethod
-    def GetWeatherPerCity() -> str:
-        ...
-
-
-class WeatherMange(WeatherManageTemplate):
+class WeatherMange():
     ApiCall: str = 'https://api.openweathermap.org/data/2.5/weather?q={CityName}&appid={ApiKey}'
     @staticmethod
     #reading data from JSON file
@@ -49,43 +33,34 @@ class WeatherMange(WeatherManageTemplate):
         except requests.exceptions.HTTPError as e:
             print(f'Cannot establish connection to server error, {e}...')
     @staticmethod
-    def getCityDataFromResponse(keyFromList: list,cityWeather: dict,newDictKey: str,oldDictKey:str) -> dict:
-        KeyDict: dict = keyFromList[0]
-        cityWeather[newDictKey] = KeyDict[oldDictKey]
-        print(KeyDict)
-        return cityWeather
+    def getCityDataFromResponse(keyFromList: list | dict,cityWeather: dict,newDictKey: str,dictKeyValue:str) -> dict:
+        if type(keyFromList) == list:
+            KeyDict: dict = keyFromList[0]
+            cityWeather[newDictKey] = KeyDict[dictKeyValue]
+            #print(KeyDict)
+            return cityWeather
+        elif type(keyFromList) == dict:
+            cityWeather[newDictKey] = dictKeyValue
+            return cityWeather
 
     @staticmethod
     # Think of async request, send all requests and gather responses later?
-    def GetWeatherPerCity(ApiCall: str, ApiKey: str, cityList: list) -> dict:
-        cityWeather: dict = {}
-        for city in cityList:
+    def GetWeatherPerCity(ApiCall: str, ApiKey: str, city) -> dict:
+            cityWeather: dict = {}
             call = ApiCall.replace('{CityName}',city).replace('{ApiKey}',ApiKey)
             cityWeather['cityName'] = city
             r = requests.get(call)
             data: dict = r.json()
             print(data)
             WeatherMange.getCityDataFromResponse(data.get('weather'),cityWeather,'weather','main')
+            r = data.get('main')
+            WeatherMange.getCityDataFromResponse(data.get('main'),cityWeather,'temperature',r['temp'])
+            WeatherMange.getCityDataFromResponse(data.get('main'),cityWeather,'tempFell',r['feels_like'])
+            WeatherMange.getCityDataFromResponse(data.get('main'),cityWeather,'tempMin',r['temp_min'])
+            WeatherMange.getCityDataFromResponse(data.get('main'),cityWeather,'tempMax',r['temp_max'])
+            WeatherMange.getCityDataFromResponse(data.get('main'),cityWeather,'humidity',r['humidity'])
             print(cityWeather)
 
 
-            #General weather description
-            #MainKey: list = data.get('weather')
-            #MainDict: dict = MainKey[0]
-            #print(MainDict['main'])
-            #cityWeather['weather'] = MainDict['main']
-            #City temperature
-            #Temperature: list = data.get('main')
-            #print(cityWeather)
-            #print(call)
-            #print(f'{ApiCall}, {ApiKey}, {cityList}')
 
-
-
-
-WeatherObject = WeatherMange()
-ConfigJSON: dict = WeatherObject.GetDataFromJson()
-print(ConfigJSON)
-WeatherObject.CheckApi(ConfigJSON['apiKey'])
-WeatherObject.GetWeatherPerCity(WeatherMange.ApiCall,ConfigJSON['apiKey'],ConfigJSON['cityList'])
 
