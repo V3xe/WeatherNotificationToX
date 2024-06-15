@@ -1,16 +1,9 @@
+#Get data from open weather, return data to post on twitter
 import requests
 import json
 
 class WeatherMange():
     ApiCall: str = 'https://api.openweathermap.org/data/2.5/weather?q={CityName}&appid={ApiKey}'
-    @staticmethod
-    #reading data from JSON file
-    def GetDataFromJson() -> dict:
-        print('Getting data from JSON...')
-        file = open('config.json')
-        data = json.load(file)
-        file.close()
-        return data
 
     @staticmethod
     #connect to specific endpoint to check if it's working
@@ -60,6 +53,7 @@ class WeatherMange():
             WeatherMange.getCityDataFromResponse(data.get('main'),cityWeather,'tempMax',r['temp_max'])
             WeatherMange.getCityDataFromResponse(data.get('main'),cityWeather,'humidity',r['humidity'])
             print(cityWeather)
+            return cityWeather
 
 
 
