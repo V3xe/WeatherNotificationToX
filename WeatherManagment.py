@@ -3,7 +3,7 @@ import requests
 import json
 
 class WeatherMange():
-    ApiCall: str = 'https://api.openweathermap.org/data/2.5/weather?q={CityName}&appid={ApiKey}'
+    ApiCall: str = 'https://api.openweathermap.org/data/2.5/weather?q={CityName}&&units=metric&lang=pl&appid={ApiKey}'
 
     @staticmethod
     #connect to specific endpoint to check if it's working
@@ -44,15 +44,15 @@ class WeatherMange():
             cityWeather['cityName'] = city
             r = requests.get(call)
             data: dict = r.json()
-            print(data)
-            WeatherMange.getCityDataFromResponse(data.get('weather'),cityWeather,'weather','main')
+            #print(data)
+            WeatherMange.getCityDataFromResponse(data.get('weather'),cityWeather,'weather','description')
             r = data.get('main')
             WeatherMange.getCityDataFromResponse(data.get('main'),cityWeather,'temperature',r['temp'])
             WeatherMange.getCityDataFromResponse(data.get('main'),cityWeather,'tempFell',r['feels_like'])
             WeatherMange.getCityDataFromResponse(data.get('main'),cityWeather,'tempMin',r['temp_min'])
             WeatherMange.getCityDataFromResponse(data.get('main'),cityWeather,'tempMax',r['temp_max'])
             WeatherMange.getCityDataFromResponse(data.get('main'),cityWeather,'humidity',r['humidity'])
-            print(cityWeather)
+            #print(cityWeather)
             return cityWeather
 
 
