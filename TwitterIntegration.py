@@ -15,10 +15,11 @@ class TweeterManagement():
 
     @staticmethod
     def PrepareTweet(cityWeather: dict) -> str:
-        tweetBody = ("Miasto: {city}\nPogoda: {weather}\n"
+        tweetBody = ("Miasto: {city1}\nPogoda: {weather}\n"
                      "Temperatura: {tempMin} C\n"
                      "Wilgotność: {humidity}%\n"
-                     "#Polska #{city} #Pogoda").format(city=str(cityWeather['cityName']).replace(" ",""),
+                     "#Polska #{city} #Pogoda").format(city1=str(cityWeather['cityName']),
+                                                       city=str(cityWeather['cityName']).replace(" ",""),
                                                        weather=cityWeather['weather'],
                                                        tempMin=cityWeather['tempMin'],
                                                        humidity=cityWeather['humidity']
@@ -30,5 +31,6 @@ class TweeterManagement():
         try:
             client.create_tweet(text=tweetBody)
             print('Tweet posted...')
-        except:
+        except SystemError as e:
             print('Error while posting tweet...')
+            print(e)

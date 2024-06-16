@@ -22,8 +22,10 @@ def main():
                                                              ConfigJSON['accessTokenSecretTweeter']
                                                              )
                 tweetBody = TI.TweeterManagement.PrepareTweet(cityData)
-                #print(tweetBody)
+                print('---------')
+                print(tweetBody)
                 TI.TweeterManagement.CreateTweet(client,tweetBody)
+                print('---------')
                 counter+=1
             except SystemError as e:
                 print(f'Error happend -> {e} ...')
