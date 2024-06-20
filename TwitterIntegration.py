@@ -47,7 +47,7 @@ class TwitterManagement():
     async def create_twitter(*,client: object, twitter_body: str) -> None:
         """Post to twitter"""
         try:
-            client.twitter(text=tweetBody)
+            client.twitter(text=twitter_body)
             print('Twitter posted...')
         except tweepy.errors.BadRequest as e:
             print(f'Error while posting tweet -> \n {twitter_body}\n {e.response.status_code}...')

@@ -4,6 +4,7 @@ from General import misc_functions
 import asyncio
 import aiohttp
 
+
 async def main() -> None:
     weather: object = WeatherMange()
     twitter: object = TwitterManagement()
