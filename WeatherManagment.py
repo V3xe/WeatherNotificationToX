@@ -1,60 +1,62 @@
 #Get data from open weather, return data to post on twitter
 import requests
 import json
+import asyncio
+import aiohttp
+
 
 class WeatherMange():
-    ApiCall: str = 'https://api.openweathermap.org/data/2.5/weather?q={CityName}&&units=metric&lang=pl&appid={ApiKey}'
+    """Open Weather Api management"""
 
     @staticmethod
     #connect to specific endpoint to check if it's working
-    def CheckApi(ApiKey:str) -> None:
-        print('Checking API status..')
-        boolFlag: bool = True
-        counter: int = 0
-        try:
-            while boolFlag:
-                counter += 1
+    def check_api(ApiKey:str) -> None:
+        """Check if open weather api works"""
+        print('Checking Open Weather API status..')
+        for_counter = 0
+        for x in range(5):
+            try:
                 r = requests.get(f'https://api.openweathermap.org/data/2.5/weather?q=London&appid={ApiKey}')
                 if r.status_code == 200:
-                    print(f'Connection established, status {r.status_code}...')
-                    boolFlag = False
-                elif counter < 5:
-                    print(f'Could not establish connection, error {r.status_code}, try -> {str(counter)}')
-                elif counter == 5:
-                    raise requests.exceptions.HTTPError
+                    print('Connection established to Open Weather API ...')
+                    break
+                elif r.status_code != 200:
+                    for_counter += 1
+                    raise exceptions.HTTPError(r.status_code)
 
-        except requests.exceptions.HTTPError as e:
-            print(f'Cannot establish connection to server error, {e}...')
+            except exceptions.HTTPError as e:
+                print(f'Cannot establish connection to server error, trying {for_counter}, error {e}...')
+                if for_counter == 5:
+                    break
+
+    #Async function to get data from a given URL using aiohttp
     @staticmethod
-    def getCityDataFromResponse(keyFromList: list | dict,cityWeather: dict,newDictKey: str,dictKeyValue:str) -> dict:
-        if type(keyFromList) == list:
-            KeyDict: dict = keyFromList[0]
-            cityWeather[newDictKey] = KeyDict[dictKeyValue]
-            #print(KeyDict)
-            return cityWeather
-        elif type(keyFromList) == dict:
-            cityWeather[newDictKey] = dictKeyValue
-            return cityWeather
+    async def call_api(session: aiohttp.ClientSession,city:str, api_key:str):
+        """Call Open Weather Api """
+        api_call: str = 'https://api.openweathermap.org/data/2.5/weather?q={CityName}&&units=metric&lang=pl&appid={ApiKey}'
+        api_call: str = api_call.replace('{CityName}',city).replace('{ApiKey}',api_key)
+        print(f'Requesting {api_call}')
+
+        #Use session.get() to make an async HTTP GET request
+        async with session.get(api_call) as response:
+            try:
+                if response.status == 404:
+                    print(f'Status -> {response.status}')
+                    raise requests.HTTPError(response.status)
+                return await response.json()
+            except Exception as e:
+                print(f'Error with URL {response.url}, error -> {e}')
 
     @staticmethod
-    # Think of async request, send all requests and gather responses later?
-    def GetWeatherPerCity(ApiCall: str, ApiKey: str, city) -> dict:
-            cityWeather: dict = {}
-            call = ApiCall.replace('{CityName}',city).replace('{ApiKey}',ApiKey)
-            cityWeather['cityName'] = city
-            r = requests.get(call)
-            data: dict = r.json()
-            #print(data)
-            WeatherMange.getCityDataFromResponse(data.get('weather'),cityWeather,'weather','description')
-            r = data.get('main')
-            WeatherMange.getCityDataFromResponse(data.get('main'),cityWeather,'temperature',r['temp'])
-            WeatherMange.getCityDataFromResponse(data.get('main'),cityWeather,'tempFell',r['feels_like'])
-            WeatherMange.getCityDataFromResponse(data.get('main'),cityWeather,'tempMin',r['temp_min'])
-            WeatherMange.getCityDataFromResponse(data.get('main'),cityWeather,'tempMax',r['temp_max'])
-            WeatherMange.getCityDataFromResponse(data.get('main'),cityWeather,'humidity',r['humidity'])
-            #print(cityWeather)
-            return cityWeather
-
-
-
-
+    async def prepare_data(city_json: dict) -> dict:
+        """Prepare data for further processing"""
+        city_data: dict = {}
+        city_data['city_name'] = city_json['name']
+        city_data['weather_dsc'] = city_json['weather'][0]['description']
+        city_data['temp_min'] = city_json['main']['temp_min']
+        city_data['temp_max'] = city_json['main']['temp_max']
+        city_data['temp_act'] = city_json['main']['temp']
+        city_data['temp_feels'] = city_json['main']['feels_like']
+        city_data['humidity'] = city_json['main']['humidity']
+        city_data['pressure'] = city_json['main']['pressure']
+        return city_data
