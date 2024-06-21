@@ -39,12 +39,13 @@ async def main() -> None:
         print('Preparing bodies for twitter...')
         tasks: list[dict] = [twitter.prepare_twitter(desc, config_json=config_json) for desc in processing_data]
         twitter_bodies = await asyncio.gather(*tasks)
+        #print(twitter_bodies)
 
     #Post to twitter
         print('Preparing bodies for twitter...')
-        for item in twitter_bodies:
-            print('-----')
-            print(item)
+        #for item in twitter_bodies:
+        #   print('-----')
+        #   print(item)
 
         tasks: list[dict] = [twitter.create_twitter(client=client,twitter_body=body) for body in twitter_bodies]
         asyncio.gather(*tasks)

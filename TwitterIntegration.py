@@ -39,7 +39,7 @@ class TwitterManagement():
                                                        temp_act=city_data['temp_act'],
                                                        humidity=city_data['humidity'],
                                                        pressure=city_data['pressure'],
-                                                       city=city_data['city_name']
+                                                       city_hash=city_data['city_name'].replace(" ","")
                                                        )
         return twitter_body
 
@@ -47,9 +47,13 @@ class TwitterManagement():
     async def create_twitter(*,client: object, twitter_body: str) -> None:
         """Post to twitter"""
         try:
-            client.twitter(text=twitter_body)
-            print('Twitter posted...')
+            client.create_tweet(text=twitter_body)
+            print(f'Twitter posted...')
         except tweepy.errors.BadRequest as e:
             print(f'Error while posting tweet -> \n {twitter_body}\n {e.response.status_code}...')
         except tweepy.errors.TooManyRequests as e:
+            print(f'Error while posting tweet -> \n {twitter_body}\n {e.response.status_code}...')
+        except tweepy.errors.Forbidden as e:
+            print(f'Error while posting tweet -> \n {twitter_body}\n {e.response.status_code}...')
+        except SystemError as e:
             print(f'Error while posting tweet -> \n {twitter_body}\n {e.response.status_code}...')

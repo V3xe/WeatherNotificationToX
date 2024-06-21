@@ -1,7 +1,5 @@
 #Get data from open weather, return data to post on twitter
 import requests
-import json
-import asyncio
 import aiohttp
 
 
@@ -43,6 +41,7 @@ class WeatherMange():
                 if response.status == 404:
                     print(f'Status -> {response.status}')
                     raise requests.HTTPError(response.status)
+
                 return await response.json()
             except Exception as e:
                 print(f'Error with URL {response.url}, error -> {e}')
@@ -51,7 +50,14 @@ class WeatherMange():
     async def prepare_data(city_json: dict) -> dict:
         """Prepare data for further processing"""
         city_data: dict = {}
-        city_data['city_name'] = city_json['name']
+
+        if city_json['name'] == 'Województwo opolskie':
+            city_data['city_name'] = 'Opole'
+        elif city_json['name'] == 'Województwo lubelskie':
+            city_data['city_name'] = 'Lublin'
+        else:
+            city_data['city_name'] = city_json['name']
+
         city_data['weather_dsc'] = city_json['weather'][0]['description']
         city_data['temp_min'] = city_json['main']['temp_min']
         city_data['temp_max'] = city_json['main']['temp_max']

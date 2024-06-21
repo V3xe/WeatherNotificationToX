@@ -1,27 +1,30 @@
 {
-
-
-"cityList": [
-  "Kielce",
-  "Wrocław",
-  "Bydgoszcz",
-  "Toruń",
-  "Lublin",
-  "Gorzów Wielkopolski",
-  "Zielona Góra",
-  "Łódź",
-  "Kraków",
-  "Warszawa",
-  "Opole",
-  "Rzeszów",
-  "Białystok",
-  "Gdańsk",
-  "Katowice",
-  "Kielce",
-  "Olsztyn",
-  "Poznań",
-  "Szczecin"
-]
-
+  "apiKeyTweeter":"",
+"apiSecretTweeter":"",
+"bearerTokenTweeter":"",
+"accessTokenTweeter":"",
+"accessTokenSecretTweeter":"",
+"apiKeyOpenWeather": "",
+  "city_list": [
+    "Białystok",
+    "Bydgoszcz",
+    "Gdańsk",
+    "Gorzów Wielkopolski",
+    "Katowice",
+    "Kielce",
+    "Kraków",
+    "Lublin",
+    "Łódź",
+    "Olsztyn",
+    "Opole",
+    "Poznań",
+    "Rzeszów",
+    "Szczecin",
+    "Toruń",
+    "Warszawa",
+    "Wrocław",
+    "Zielona Góra"
+  ],
+  "twitter_template": "Miasto: {city_name}\nPogoda: {weather_dsc}\nTemperatura: {temp_act} C\nWilgotność: {humidity}%\nCiśnienie: {pressure}hPa\n#Polska #{city_hash} #Pogoda"
 }
 
